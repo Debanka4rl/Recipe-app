@@ -1,0 +1,52 @@
+﻿@model List<supaathrowaway.Models.Recipe>
+
+@{
+    ViewData["Title"] = "Public Recipes";
+}
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div style="color: red; margin-bottom: 15px;">@ViewBag.ErrorMessage</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div style="color: red; margin-bottom: 15px;">@TempData["ErrorMessage"]</div>
+}
+
+<h2>Recipe Dashboard</h2>
+<p style="color: gray; font-size: 0.9em;">(Public Mode: Click any recipe to view its details and images)</p>
+
+<a href="/Home/Create" style="display:inline-block; margin-bottom:20px; color: green; font-weight: bold; text-decoration: none;">
+    + Add New Recipe
+</a>
+<hr />
+
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+    @foreach (var recipe in Model)
+    {
+        <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; background-color: #fdfdfd; display: flex; flex-direction: column; justify-content: space-between;">
+
+            <a href="/Home/Details/@recipe.Id" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+                <h3 style="margin-top: 0; color: #007bff;">@recipe.Name</h3>
+                <p><strong>Complexity:</strong> @recipe.Complexity</p>
+
+                @{
+                    var words = recipe.Description?.Split(new[] { ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                    var shortDescription = words.Length > 20
+                    ? string.Join(" ", words.Take(20)) + "..."
+                                            : recipe.Description;
+                }
+                <p style="color: #555;">@shortDescription</p>
+            </a>
+
+            <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                <form action="/Home/Delete/@recipe.Id" method="post" onsubmit="return confirm('Are you sure you want to delete this recipe?');">
+                    <button type="submit" style="color: white; background-color: #dc3545; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-weight: bold;">
+                        Delete
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    }
+</div>
